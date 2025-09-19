@@ -1,12 +1,22 @@
+import AccelerateCareer from "@/components/home/AccelerateCareer";
+import FAQS from "@/components/home/FAQS";
+import FeatureSection from "@/components/home/FeatureSection";
+import HeroSection from "@/components/home/HeroSection";
+import HowItWorks from "@/components/home/HowItWorks";
+import StatsSection from "@/components/home/StatsSection";
+import Testimonials from "@/components/home/Testimonials";
 
 export default function Home() {
   return (
-    <section className="h-screen w-full flex items-center justify-center grid-background">
-      <h1 className="text-5xl font-bold md:text-6xl lg:text-7xl xl:text-8xl leading-[1.2] gradient-title animate-gradient">
-  Coming Soon
-</h1>
-
-
-    </section>
+   <>
+         <div className="grid-background"></div>
+   <HeroSection/>
+   <FeatureSection/>
+   <StatsSection/>
+   <HowItWorks/>
+   <Testimonials/>
+   <FAQS/>
+   <AccelerateCareer/>
+   </>
   );
 }
