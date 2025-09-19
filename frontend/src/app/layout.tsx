@@ -30,18 +30,19 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Header/>
-            <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <main className="min-h-screen">
+        <Header />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <main className="min-h-screen">
+            <div className="grid-background"></div>
             {children}
-            </main>
-          </ThemeProvider>
-          <Footer/>
+          </main>
+        </ThemeProvider>
+        <Footer />
       </body>
     </html>
   );

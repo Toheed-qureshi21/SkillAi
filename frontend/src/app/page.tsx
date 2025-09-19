@@ -8,15 +8,14 @@ import Testimonials from "@/components/home/Testimonials";
 
 export default function Home() {
   return (
-   <>
-         <div className="grid-background"></div>
-   <HeroSection/>
-   <FeatureSection/>
-   <StatsSection/>
-   <HowItWorks/>
-   <Testimonials/>
-   <FAQS/>
-   <AccelerateCareer/>
-   </>
+    <>
+      <HeroSection />
+      <FeatureSection />
+      <StatsSection />
+      <HowItWorks />
+      <Testimonials />
+      <FAQS />
+      <AccelerateCareer />
+    </>
   );
 }
