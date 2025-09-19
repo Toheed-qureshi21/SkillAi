@@ -6,7 +6,7 @@ import { Button } from "./ui/button";
 
 const Header = () => {
   return (
-    <header className="px-4 py-2 border-b">
+    <header className="px-4 py-2 border-b sticky top-0 backdrop-blur-xl bg-transparent z-50">
       <nav className=" flex items-center justify-between ">
         <Link href="/">
           <Image
