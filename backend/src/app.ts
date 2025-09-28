@@ -5,12 +5,18 @@ import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import morgan from "morgan";
 import rateLimit from "express-rate-limit";
+import { connectDb } from "./lib/db";
+import authRouter from "./routes/auth/auth.route";
+import { transporter } from "./lib/nodemailer";
 
 dotenv.config();
-
+connectDb();
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: process.env.FRONTEND_URL,
+  credentials: true,
+}));
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
@@ -29,11 +35,12 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
-app.get("/", (req, res) => {
-  res.send("API is running....");
-});
+// Routes
+app.use("/api/auth",authRouter);  // full path: /api/auth/signup, /api/auth/login
+
 
 const PORT = process.env.PORT || 5000;
+
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });
