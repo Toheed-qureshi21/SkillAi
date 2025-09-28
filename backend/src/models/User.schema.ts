@@ -5,7 +5,7 @@ export interface IUser extends Document {
   email: string;
   password: string;
   isEmailVerified: boolean;
-  emailVerficationToken?: string | null;
+  emailVerificationToken?: string | null;
   emailVerificationTokenExpires?: Date | null;
 }
 
@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema<IUser>(
     name: {
       type: String,
       required: true,
-      min: 3,
+      minlength: 3,
     },
     email: {
       type: String,
@@ -24,10 +24,10 @@ const userSchema = new mongoose.Schema<IUser>(
     password: {
       type: String,
       required: true,
-      min: 6,
+      minlength: 3,
     },
     isEmailVerified: { type: Boolean, default: false },
-    emailVerficationToken: { type: String, default: null }, // string | null
+    emailVerificationToken: { type: String, default: null }, // string | null
     emailVerificationTokenExpires: { type: Date, default: null }, // Date | null
   },
   {

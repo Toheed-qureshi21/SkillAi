@@ -4,7 +4,11 @@ import { generateVerificationEmail } from "../lib/mjml";
 
 dotenv.config();
 
-export const sendVerificationEmail = async (to: string, code: string, link: string) => {
+export const sendVerificationEmail = async (
+  to: string,
+  code: string,
+  link: string
+) => {
   try {
     const html = generateVerificationEmail(code, link);
 
@@ -15,8 +19,9 @@ export const sendVerificationEmail = async (to: string, code: string, link: stri
       html,
     });
 
-    console.log(`✅ Verification email sent to ${to}`); 
+    console.log(`✅ Verification email sent to ${to}`);
   } catch (err) {
     console.error("❌ Error sending verification email:", err);
+    throw err;
   }
 };

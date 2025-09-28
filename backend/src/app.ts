@@ -40,15 +40,7 @@ app.use("/api/auth",authRouter);  // full path: /api/auth/signup, /api/auth/logi
 
 
 const PORT = process.env.PORT || 5000;
-// console.log("SMTP user:", process.env.BREVO_EMAIL);
-// console.log("SMTP pass:", process.env.BREVO_SMTP_KEY);
-transporter.verify((err, success) => {
-  if (err) {
-    console.log("❌ SMTP Auth failed", err);
-  } else {
-    console.log("✅ SMTP Auth success");
-  }
-});
+
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });

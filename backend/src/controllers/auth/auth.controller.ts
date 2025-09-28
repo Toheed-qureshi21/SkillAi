@@ -91,14 +91,14 @@ export const Login = TryCatch(async (req: Request, res: Response) => {
     .status(200)
     .json({ message: "Login successful", user, success: true });
 });
-export const verfiyEmail = TryCatch(async (req: Request, res: Response) => {
+export const verifyEmail = TryCatch(async (req: Request, res: Response) => {
   const { token } = req.body;
   if (!token) {
     return res.status(400).json({ message: "Token is required", success: false });
   }
 
   const user = await UserModel.findOne({
-    emailVerficationToken: token,
+    emailVerificationToken: token,
     emailVerificationTokenExpires: { $gt: new Date() }
   });
 
@@ -107,7 +107,7 @@ export const verfiyEmail = TryCatch(async (req: Request, res: Response) => {
   }
 
   user.isEmailVerified = true;
-  user.emailVerficationToken = null; // OK if schema is optional
+  user.emailVerificationToken = null; // OK if schema is optional
   user.emailVerificationTokenExpires = null; // OK if schema is optional
 
   await user.save();

@@ -7,10 +7,19 @@ export const TryCatch = (
     try {
       await handlerFunction(req, res);
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        return res.status(500).json({ message: error.message });
+      if (typeof error === "object" && error !== null) {
+        const { status, statusCode, publicMessage } = error as {
+          status?: number;
+          statusCode?: number;
+          publicMessage?: string;
+        };
+        if (status ?? statusCode) {
+          return res
+            .status(status ?? statusCode!)
+            .json({ message: publicMessage ?? "Request failed" });
+        }
       }
-      return res.status(500).json({ message: "Something went wrong" });
+      return res.status(500).json({ message: "Internal Server Error" });
     }
   };
 };
