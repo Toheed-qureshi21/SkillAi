@@ -1,7 +1,8 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "main": "index.ts",
+  "main": "app.ts",
+  "type": "module",
   "scripts": {
     "dev": "tsx watch src/app.ts",
     "build": "tsc",
@@ -20,7 +21,11 @@
     "express-rate-limit": "^8.1.0",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
-    "morgan": "^1.10.1"
+    "mjml": "^4.16.1",
+    "mongoose": "^8.18.1",
+    "morgan": "^1.10.1",
+    "nodemailer": "^7.0.6",
+    "zod": "^4.1.11"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
@@ -28,8 +33,11 @@
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/jsonwebtoken": "^9.0.10",
+    "@types/mjml": "^4.7.4",
+    "@types/mongoose": "^5.11.96",
     "@types/morgan": "^1.9.10",
     "@types/node": "^24.5.2",
+    "@types/nodemailer": "^7.0.1",
     "ts-node": "^10.9.2",
     "tsx": "^4.20.5",
     "typescript": "^5.9.2"

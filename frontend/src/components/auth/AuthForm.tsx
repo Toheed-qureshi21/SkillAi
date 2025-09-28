@@ -1,4 +1,5 @@
 "use client";
+import { loginUser, signupUser } from "@/backend-apis/auth";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -7,13 +8,51 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { FormState } from "@/types";
 import { Label } from "@radix-ui/react-dropdown-menu";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import toast from "react-hot-toast";
 
 const AuthForm = ({ isLogin }: { isLogin: boolean }) => {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [form, setForm] = useState<FormState>({
+    name: "",
+    email: "",
+    password: "",
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      if (isLogin) {
+        const response = await loginUser({
+          email: form.email,
+          password: form.password,
+        });
+        console.log(response.data);
+        return toast.success("Login Successful");
+      } else {
+        // Call signup API
+        const response = await signupUser({
+          name: form.name,
+          email: form.email,
+          password: form.password,
+        });
+        console.log(response.data);
+         toast.success("Signup Successful");
+         return router.push("/verify-email");
+      }
+    } catch (error: any) {
+      return toast.error(
+        error?.response?.data?.message || "Something went wrong"
+      );
+    }
+  };
+
   return (
     <section className="h-screen flex items-center justify-center mx-4">
       <Card className="w-96">
@@ -60,22 +99,37 @@ const AuthForm = ({ isLogin }: { isLogin: boolean }) => {
             <p className="mx-2 text-muted-foreground text-sm">OR</p>
             <div className="border-t-2 w-1/2"></div>
           </div>
-          <div className="mb-2 mt-4 flex flex-col gap-6">
-            {isLogin && (
+          <form onSubmit={handleSubmit} className="mb-2 mt-4 flex flex-col gap-6">
+            {!isLogin && (
               <div className="flex flex-col gap-2">
                 <Label>Full Name</Label>
-                <Input placeholder="Enter your Full Name" type="text"></Input>
+                <Input
+                  name="name"
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  placeholder="Enter your Full Name"
+                  type="text"
+                ></Input>
               </div>
             )}
 
             <div className="flex flex-col gap-2">
               <Label>Email</Label>
-              <Input placeholder="Enter your email" type="email"></Input>
+              <Input
+                name="email"
+                value={form.email}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                placeholder="Enter your email"
+                type="email"
+              ></Input>
             </div>
             <div className="flex flex-col gap-2 relative">
               <Label>Password</Label>
               <Input
                 placeholder="Enter your Password"
+                value={form.password}
+                name="password"
+                onChange={(e) => setForm({ ...form, password: e.target.value })}
                 type={showPassword ? "text" : "password"}
                 className=""
               ></Input>
@@ -96,7 +150,7 @@ const AuthForm = ({ isLogin }: { isLogin: boolean }) => {
             <Button type="submit" className="w-full pt-2">
               {isLogin ? "Login" : "Sign Up"}
             </Button>
-          </div>
+          </form>
         </CardContent>
         <CardFooter className="flex justify-center">
           <p className="text-center text-muted-foreground text-md">
