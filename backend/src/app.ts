@@ -5,9 +5,9 @@ import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import morgan from "morgan";
 import rateLimit from "express-rate-limit";
-import { connectDb } from "./lib/db";
-import authRouter from "./routes/auth/auth.route";
-import { transporter } from "./lib/nodemailer";
+import { connectDb } from "./lib/db.js";
+import authRouter from "./routes/auth/auth.route.js";
+import { transporter } from "./lib/nodemailer.js";
 
 dotenv.config();
 connectDb();

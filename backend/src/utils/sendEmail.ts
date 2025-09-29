@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
-import { transporter } from "../lib/nodemailer";
-import { generateVerificationEmail } from "../lib/mjml";
+import { transporter } from "../lib/nodemailer.js";
+import { generateVerificationEmail } from "../lib/mjml.js";
 
 dotenv.config();
 
