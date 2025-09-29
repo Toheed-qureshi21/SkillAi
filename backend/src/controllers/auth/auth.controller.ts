@@ -1,24 +1,24 @@
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
-import { TryCatch } from "../../utils/TryCatch";
+import { TryCatch } from "../../utils/TryCatch.js";
 import {
   loginValidator,
   SignupInput,
   signupValidator,
-} from "../../validators/auth.validator";
-import { UserModel } from "../../models/User.schema";
-import { generateAccessToken, generateRefreshToken } from "../../utils/jwt";
-import { sendJwtTokensInCookies } from "../../utils/cookies";
-import { sendVerificationEmail } from "../../utils/sendEmail";
-import { generateVerificationToken } from "../../services/user.service";
-import { success } from "zod";
+} from "../../validators/auth.validator.js";
+import { UserModel } from "../../models/User.schema.js";
+import { generateAccessToken, generateRefreshToken } from "../../utils/jwt.js";
+import { sendJwtTokensInCookies } from "../../utils/cookies.js";
+import { sendVerificationEmail } from "../../utils/sendEmail.js";
+import { generateVerificationToken } from "../../services/user.service.js";
+import { z } from "zod";
 
 // Signup controller
   export const signup = TryCatch(async (req: Request, res: Response) => {
     const result = signupValidator.safeParse(req.body);
     if (!result.success) {
       return res.status(400).json({
-        errors: result?.error?.issues?.map((err) => ({
+        errors: result?.error?.issues?.map((err:z.ZodIssue) => ({
           field: err.path[0],
           message: err.message,
         })),
@@ -63,7 +63,7 @@ export const Login = TryCatch(async (req: Request, res: Response) => {
   const result = loginValidator.safeParse(req.body);
   if (!result.success) {
     return res.status(400).json({
-      errors: result?.error?.issues?.map((err) => ({
+      errors: result?.error?.issues?.map((err:z.ZodIssue) => ({
         field: err.path[0],
         message: err.message,
       })),
