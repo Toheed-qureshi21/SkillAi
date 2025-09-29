@@ -9,7 +9,7 @@
     "start": "node dist/app.js",
     "serve": "npm run build && npm run start",
     "clean": "npx rimraf dist",
-    "render-build": "npm i && npm run build"
+    "render-build": "npm install --include=dev && npm run build"
   },
   "keywords": [],
   "author": "",
