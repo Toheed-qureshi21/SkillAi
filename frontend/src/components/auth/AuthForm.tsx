@@ -46,11 +46,20 @@ const AuthForm = ({ isLogin }: { isLogin: boolean }) => {
          toast.success("Signup Successful");
          return router.push("/verify-email");
       }
-    } catch (error: any) {
-      return toast.error(
-        error?.response?.data?.message || "Something went wrong"
-      );
-    }
+    } catch (error: unknown) {
+  if (error instanceof Error) {
+    return toast.error(error.message);
+  }
+
+  // Axios-style error
+  if (typeof error === "object" && error !== null && "response" in error) {
+    const err = error as { response?: { data?: { message?: string } } };
+    return toast.error(err.response?.data?.message || "Something went wrong");
+  }
+
+  return toast.error("Something went wrong");
+}
+
   };
 
   return (
