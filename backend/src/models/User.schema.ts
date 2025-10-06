@@ -23,7 +23,7 @@ const userSchema = new mongoose.Schema<IUser>(
     },
     password: {
       type: String,
-      required: true,
+      // required: true,
       minlength: 3,
     },
     isEmailVerified: { type: Boolean, default: false },

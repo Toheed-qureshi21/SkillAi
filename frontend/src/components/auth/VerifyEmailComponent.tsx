@@ -10,8 +10,10 @@ import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
 import { useRouter, useSearchParams } from "next/navigation";
 import { verifyEmail } from "@/backend-apis/auth";
 import toast from "react-hot-toast";
+import { Button } from "../ui/button";
 
 const VerifyEmailComponent = () => {
+  const RESEND_INTERVAL = 60; // seconds
   const searchParams = useSearchParams();
   const tokenFromLink = searchParams.get("token"); // Get token from ?token=xxxxx
   const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
@@ -20,6 +22,7 @@ const VerifyEmailComponent = () => {
   const [success, setSuccess] = useState(false);
   const [showErrorBorder, setShowErrorBorder] = useState(false); // Controls red border
   const router = useRouter();
+  const [resendTimer, setResendTimer] = useState(0);
 
   // Autofocus first input on mount or auto-fill if token exists
   useEffect(() => {
@@ -34,6 +37,28 @@ const VerifyEmailComponent = () => {
       firstInput?.focus();
     }
   }, [tokenFromLink]);
+
+  const startResendTimer = () => {
+    setResendTimer(RESEND_INTERVAL);
+  };
+  useEffect(() => {
+  setResendTimer(RESEND_INTERVAL);
+}, []);
+  useEffect(() => {
+    
+    if (resendTimer <= 0) return;
+    const interval = setInterval(() => {
+      setResendTimer((prev) => prev - 1);
+    }, 1000);
+    
+    return () => clearInterval(interval);
+  }, [resendTimer]);
+
+  const handleResend = () => {
+    // Call your resend API here
+    console.log("Resend code triggered");
+    startResendTimer(); // restart countdown
+  };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>, index: number) => {
     const value = e.target.value;
@@ -104,9 +129,8 @@ const VerifyEmailComponent = () => {
     } catch (err: unknown) {
       let message = "Something went wrong. Please try again.";
 
-      if (err instanceof Error) message = err.message;
       // Optional: if you use Axios
-      else if (typeof err === "object" && err !== null && "response" in err) {
+      if (typeof err === "object" && err !== null && "response" in err) {
         const e = err as { response?: { data?: { message?: string } } };
         message = e.response?.data?.message || message;
       }
@@ -127,7 +151,7 @@ const VerifyEmailComponent = () => {
             Enter the Verification Code
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex flex-col gap-4">
           <div className="flex justify-between mt-4">
             {otp.map((digit, index) => (
               <input
@@ -162,6 +186,10 @@ const VerifyEmailComponent = () => {
               OTP Verified Successfully!
             </p>
           )}
+          <Button onClick={handleResend} disabled={resendTimer > 0}>
+            {" "}
+            {resendTimer > 0 ? `Resend in ${resendTimer}s` : "Resend Code"}
+          </Button>
         </CardContent>
       </Card>
     </section>
