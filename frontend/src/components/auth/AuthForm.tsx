@@ -12,12 +12,13 @@ import { FormState } from "@/types";
 import { Label } from "@radix-ui/react-dropdown-menu";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
+import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 
 const AuthForm = ({ isLogin }: { isLogin: boolean }) => {
   const router = useRouter();
+  const pathname = usePathname();
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [form, setForm] = useState<FormState>({
     name: "",
@@ -33,33 +34,33 @@ const AuthForm = ({ isLogin }: { isLogin: boolean }) => {
           email: form.email,
           password: form.password,
         });
-        console.log(response.data);
-        return toast.success("Login Successful");
+        console.log("Regular login response:", response.data);
+        toast.success("Login Successful");
+        router.push("/dashboard");
       } else {
-        // Call signup API
         const response = await signupUser({
           name: form.name,
           email: form.email,
           password: form.password,
         });
-        console.log(response.data);
-         toast.success("Signup Successful");
-         return router.push("/verify-email");
+        console.log("Signup response:", response.data);
+        toast.success("Signup Successful");
+        router.push("/verify-email");
       }
     } catch (error: unknown) {
-  if (error instanceof Error) {
-    return toast.error(error.message);
-  }
+      if (typeof error === "object" && error !== null && "response" in error) {
+        const err = error as { response?: { data?: { message?: string } } };
+        toast.error(err.response?.data?.message || "Something went wrong");
+      } else {
+        toast.error("Something went wrong");
+      }
+    }
+  };
 
-  // Axios-style error
-  if (typeof error === "object" && error !== null && "response" in error) {
-    const err = error as { response?: { data?: { message?: string } } };
-    return toast.error(err.response?.data?.message || "Something went wrong");
-  }
-
-  return toast.error("Something went wrong");
-}
-
+  const handleGoogleLogin = () => {
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_ROUTE || "http://localhost:5000";
+    console.log("Redirecting to Google OAuth:", `${backendUrl}/api/auth/google`);
+    window.location.href = `${backendUrl}/api/auth/google`;
   };
 
   return (
@@ -77,7 +78,7 @@ const AuthForm = ({ isLogin }: { isLogin: boolean }) => {
         </CardHeader>
         <CardContent>
           <div className="flex flex-col">
-            <Button variant="outline">
+            <Button variant="outline" onClick={handleGoogleLogin}>
               <svg
                 className="w-6 h-6"
                 xmlns="http://www.w3.org/2000/svg"
@@ -104,11 +105,14 @@ const AuthForm = ({ isLogin }: { isLogin: boolean }) => {
             </Button>
           </div>
           <div className="mt-4 flex justify-center items-center">
-            <div className=" border-t-2 w-1/2"></div>
+            <div className="border-t-2 w-1/2"></div>
             <p className="mx-2 text-muted-foreground text-sm">OR</p>
             <div className="border-t-2 w-1/2"></div>
           </div>
-          <form onSubmit={handleSubmit} className="mb-2 mt-4 flex flex-col gap-6">
+          <form
+            onSubmit={handleSubmit}
+            className="mb-2 mt-4 flex flex-col gap-6"
+          >
             {!isLogin && (
               <div className="flex flex-col gap-2">
                 <Label>Full Name</Label>
@@ -121,7 +125,6 @@ const AuthForm = ({ isLogin }: { isLogin: boolean }) => {
                 ></Input>
               </div>
             )}
-
             <div className="flex flex-col gap-2">
               <Label>Email</Label>
               <Input

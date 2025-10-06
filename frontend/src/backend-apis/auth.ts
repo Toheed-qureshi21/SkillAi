@@ -12,3 +12,7 @@ export const loginUser = async (data: { email: string; password: string }) => {
 export const verifyEmail = async (data: { token: string }) => {
   return await  BackendAPI.post(API_ROUTES.auth.verifyEmail, data);
 }
+
+export const logoutUser = async() => {
+  return await BackendAPI.post(API_ROUTES.auth.logout);
+}

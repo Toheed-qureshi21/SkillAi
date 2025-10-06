@@ -7,7 +7,10 @@ import morgan from "morgan";
 import rateLimit from "express-rate-limit";
 import { connectDb } from "./lib/db.js";
 import authRouter from "./routes/auth/auth.route.js";
-import { transporter } from "./lib/nodemailer.js";
+
+import passport from "passport";
+
+import "./lib/passport.js";
 
 dotenv.config();
 connectDb();
@@ -16,9 +19,12 @@ const app = express();
 app.use(cors({
   origin: process.env.FRONTEND_URL,
   credentials: true,
+   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
 }));
 app.use(express.json());
 app.use(cookieParser());
+app.use(passport.initialize());
 app.use(express.urlencoded({ extended: true }));
 app.use(helmet());
 
