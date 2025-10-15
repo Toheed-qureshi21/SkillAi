@@ -8,7 +8,6 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { setUser } from "@/redux/userSlice";
 import { FormState } from "@/types";
 import { Label } from "@radix-ui/react-dropdown-menu";
 import { Eye, EyeOff } from "lucide-react";
@@ -26,7 +25,7 @@ const AuthForm = ({ isLogin }: { isLogin: boolean }) => {
     email: "",
     password: "",
   });
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,7 +36,6 @@ const AuthForm = ({ isLogin }: { isLogin: boolean }) => {
           password: form.password,
         });
         const isOnboarded = response.data.user.isOnboarded;
-        isOnboarded ? router.push("/dashboard") : router.push("/onboard-user");
         isOnboarded ? router.push("/dashboard") : router.push("/onboard-user");
         return;
       } else {

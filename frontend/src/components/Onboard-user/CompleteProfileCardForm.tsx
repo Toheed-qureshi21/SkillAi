@@ -6,7 +6,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "../ui/card";
@@ -29,15 +28,16 @@ import { onboardUser } from "@/backend-apis/user";
 import { setUser } from "@/redux/userSlice";
 import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { payloadForOnboarding } from "@/types";
 
 const CompleteProfileCardForm = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const [loading, setLoading] = useState<Boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const [selectedIndustry, setSelectedIndustry] = useState<
     null | (typeof industries)[0]
   >(null);
-  const [details, setDetails] = useState({
+  const [details, setDetails] = useState<payloadForOnboarding>({
     specialization: "",
     yearOfExperience: "",
     skills: "",
@@ -75,14 +75,16 @@ const CompleteProfileCardForm = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const payload = {
+      const payload :payloadForOnboarding = {
         industry: selectedIndustry?.name || "",
         specialization: details.specialization,
-        yearsOfExperience: Number(details.yearOfExperience), // ✅ convert to number
-        skills: details.skills.split(",").map((s) => s.trim().toLowerCase()), // ✅ convert to array
+        yearOfExperience: Number(details.yearOfExperience), // ✅ convert to number
+        skills: (typeof details.skills === "string"
+          ? details.skills.split(",").map((s) => s.trim().toLowerCase())
+          : details.skills), // ✅ convert to array
         bio: details.bio,
       };
-      const response = await onboardUser(payload);
+      const response = await onboardUser(payload );
       dispatch(setUser(response.data.user));
     } catch (error: AxiosError | unknown) {
       const message =

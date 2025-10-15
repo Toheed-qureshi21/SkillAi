@@ -1,6 +1,7 @@
 import crypto from "crypto";
 import { UserModel } from "../models/User.schema.js";
 import { Response } from "express";
+import { redis } from "../lib/redisClient.js";
 
 export const generateVerificationToken = (digit = 6) => {
   const min = 10 ** (digit - 1);
@@ -16,6 +17,8 @@ export const fetchUserProfile = async (id: string): Promise<any | null> => {
     if (!id || !/^[0-9a-fA-F]{24}$/.test(id)) {
       throw new Error("Invalid user ID format");
     }
+    const cached = await redis.hgetall(`user:${id}`);
+    if (cached && cached.user) return JSON.parse(cached.user);
 
     const user = await UserModel.findById(id)
       .select("-password")
@@ -25,7 +28,7 @@ export const fetchUserProfile = async (id: string): Promise<any | null> => {
     if (!user) {
       return null;
     }
-
+    await redis.hset(`user:${user._id}`, { user: JSON.stringify(user) });
     return user;
   } catch (error) {
     console.error(`Error fetching user profile for ID ${id}:`, error);

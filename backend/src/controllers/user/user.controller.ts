@@ -3,8 +3,11 @@ import { TryCatch } from "../../utils/TryCatch.js";
 import { onboardUserValidator } from "../../validators/user.validator.js";
 import { IUser, UserModel } from "../../models/User.schema.js";
 
+
+
 export const getUserProfile = TryCatch(async (req: Request, res: Response) => {
-  return res.status(200).json({ success: true, user: req.user });
+  const user = req.user as IUser;
+  return res.status(200).json({ success: true, user });
 });
 
 export const onboardUserToCompleteProfile = TryCatch(async(req:Request,res:Response)=>{
