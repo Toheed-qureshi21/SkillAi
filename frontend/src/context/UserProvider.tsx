@@ -19,32 +19,34 @@ const UserContext = createContext<UserContextType>({
 
 export const useUser = () => useContext(UserContext);
 
-export default function UserProvider({ children }: { children: React.ReactNode }) {
+export default function UserProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const dispatch = useDispatch();
   const [localUser, setLocalUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const {user} = useAppSelector((state) => state.user);
+  const { user } = useAppSelector((state) => state.user);
 
   useEffect(() => {
     const fetchUser = async () => {
-    //   const storedUser = sessionStorage.getItem("user");
-    //   if (storedUser) {
-    //     const parsed = JSON.parse(storedUser);
-    //     setLocalUser(parsed);
-    //     dispatch(setUser(parsed));
-    //     setLoading(false);
-    //     return;
-    //   }
-     
+      //   const storedUser = sessionStorage.getItem("user");
+      //   if (storedUser) {
+      //     const parsed = JSON.parse(storedUser);
+      //     setLocalUser(parsed);
+      //     dispatch(setUser(parsed));
+      //     setLoading(false);
+      //     return;
+      //   }
+
       try {
-         if (user) {
-        setLoading(false);
-        return null;
-      }
-        const res = await getCurrentUser(); // your backend endpoint     
+        const res = await getCurrentUser();
+        if (res?.data?.user) {
           setLocalUser(res.data.user);
-          dispatch(setUser(res.data.user))     
-      } catch (err) {
+          dispatch(setUser(res.data.user));
+        }          return;
+        }catch (err) {
         console.error("Failed to fetch user:", err);
       } finally {
         setLoading(false);

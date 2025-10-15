@@ -42,7 +42,6 @@ export const authMiddleware = async (
     const user = await fetchUserProfile(userId);
 
     if (!user) {
-      console.log("User not found for userId:", userId);
       return res.status(401).json({ message: "Unauthorized", success: false });
     }
 

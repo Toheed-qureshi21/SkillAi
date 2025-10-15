@@ -4,9 +4,9 @@ export interface FormState {
   password: string;
 }
 export interface payloadForOnboarding {
-    industry?: string;
-    specialization: string;
-    yearOfExperience: string | number;
-    skills: string | string[];
-    bio: string;
+  industry?: string;
+  specialization: string;
+  yearOfExperience: string | number;
+  skills: string | string[];
+  bio: string;
 }

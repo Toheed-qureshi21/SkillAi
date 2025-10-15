@@ -1,6 +1,7 @@
 import { config } from "dotenv";
 import RedisDefault from "ioredis";
 
+
 config();
 
 // TypeScript workaround: cast default import to the constructor type

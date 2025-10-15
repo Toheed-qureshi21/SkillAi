@@ -32,14 +32,6 @@ export const signup = TryCatch(async (req: Request, res: Response) => {
 
   const { name, email, password }: SignupInput = result.data;
 
-  // Check if user exists in Redis first
-  const userKeys = await redis.keys("user:*");
-  for (const key of userKeys) {
-    const cached = await redis.hgetall(key);
-    if (cached?.user && JSON.parse(cached.user).email === email)
-      return res.status(400).json({ message: "You are already registered, please login" });
-  }
-
   const hashedPassword = await bcrypt.hash(password, 12);
   const { token, expires } = generateVerificationToken(6);
 
@@ -52,7 +44,9 @@ export const signup = TryCatch(async (req: Request, res: Response) => {
   });
 
   const user = userData.toObject();
-   user.password = "";
+   user.password = ""
+   user.emailVerificationToken = null,
+   user.emailVerificationTokenExpires = null;
 
   // Cache user in Redis
   await redis.hset(`user:${userData._id}`, { user: JSON.stringify(user) });
@@ -88,28 +82,17 @@ export const Login = TryCatch(async (req: Request, res: Response) => {
 
   const { email, password } = result.data;
 
-  // Check Redis cache first
-  let user: IUser | null = null;
-  const keys = await redis.keys("user:*");
-  for (const key of keys) {
-    const cached = await redis.hgetall(key);
-    if (cached?.user && JSON.parse(cached.user).email === email) {
-      user = JSON.parse(cached.user);
-      break;
-    }
-  }
 
-  // If not in Redis, query DB
+  let user: IUser | null = null;
+
+
   let userDataObj = null;
-  if (!user) {
     userDataObj = await UserModel.findOne({ email });
     if (!userDataObj) return res.status(400).json({ message: "You are not registered, please signup" });
     user = userDataObj.toObject();
     user.password = "";
     await redis.hset(`user:${userDataObj._id}`, { user: JSON.stringify(user) });
-  } else {
-    userDataObj = await UserModel.findOne({ email }); // for password check
-  }
+  
 
   const isPasswordValid = await bcrypt.compare(password, userDataObj!.password);
   if (!isPasswordValid) return res.status(400).json({ message: "Invalid credentials" });
@@ -179,13 +162,6 @@ export const resendVerificationEmail = TryCatch(async (req: Request, res: Respon
   await user.save();
 
   // Update Redis cache
-  const cached = await redis.hgetall(`user:${user._id}`);
-  if (cached?.user) {
-    const updatedUser = JSON.parse(cached.user);
-    updatedUser.emailVerificationToken = token;
-    updatedUser.emailVerificationTokenExpires = expires;
-    await redis.hset(`user:${user._id}`, { user: JSON.stringify(updatedUser) });
-  }
 
   const link = `${process.env.FRONTEND_URL}/verify-email?token=${token}`;
   try {
