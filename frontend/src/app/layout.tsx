@@ -6,9 +6,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Toaster } from "react-hot-toast";
 import ReduxProviderWrapper from "@/components/ReduxProviderWrapper";
-import { cookies } from "next/headers";
-import axios from "axios";
-import { User } from "@/redux/userSlice";
+import UserProvider from "@/context/UserProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,63 +25,28 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
-  const cookieStore = await cookies();
-  const accessToken = cookieStore.get("accessToken")?.value;
-  const refreshToken = cookieStore.get("refreshToken")?.value;
-
-  const cookieHeader = [
-    accessToken ? `accessToken=${accessToken}` : "",
-    refreshToken ? `refreshToken=${refreshToken}` : "",
-  ]
-    .filter(Boolean)
-    .join("; "); // ✅ valid format
-  const isLoggedIn = cookieStore.get("isLoggedIn")?.value === "true";
-
-  let user: User | null = null;
-  const fetchUserDetails = async () => {
-    if (!isLoggedIn) return null;
-    if (!accessToken && !refreshToken) return null;
-    try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BACKEND_ROUTE}/api/user/me`,
-        {
-          headers: {
-            cookie: cookieHeader,
-          },
-          withCredentials: true,
-          timeout: 5000,
-        }
-      );
-      user = response.data?.user;
-    } catch (error: any) {
-      console.log(error?.response?.data?.message);
-    }
-  };
-  await fetchUserDetails();
-
+}) {
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Header />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
-          <ReduxProviderWrapper initialUser={user}>
-            <main className="min-h-screen">
-              {/* <div className="grid-background"></div> */}
-              {children}
-            </main>
+          <ReduxProviderWrapper>
+            <UserProvider>
+              <Header />
+              <main className="min-h-screen">{children}</main>
+              <Footer />
+            </UserProvider>
           </ReduxProviderWrapper>
         </ThemeProvider>
-        <Footer />
         <Toaster position="top-right" />
       </body>
     </html>

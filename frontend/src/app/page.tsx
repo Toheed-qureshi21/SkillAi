@@ -1,5 +1,3 @@
-import { getCurrentUser } from "@/backend-apis/user";
-import UserInitializer from "@/components/auth/UserInitializer";
 import AccelerateCareer from "@/components/home/AccelerateCareer";
 import FAQS from "@/components/home/FAQS";
 import FeatureSection from "@/components/home/FeatureSection";

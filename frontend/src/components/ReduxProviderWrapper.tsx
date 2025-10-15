@@ -2,21 +2,14 @@
 
 import { Provider } from "react-redux";
 import { createStore } from "@/redux/store";
-import { User } from "@/redux/userSlice";
-import { ReactNode } from "react";
+import { ReactNode, useMemo } from "react";
 
 interface ReduxProviderProps {
   children: ReactNode;
-  initialUser?: User | null; // same type as preloadedState
 }
 
-import { useMemo } from "react";
-
-export default function ReduxProviderWrapper({
-  children,
-  initialUser,
-}: ReduxProviderProps) {
-  const store = useMemo(() => createStore({ user: initialUser ?? null }), []);
+export default function ReduxProviderWrapper({ children }: ReduxProviderProps) {
+  const store = useMemo(() => createStore(), []);
 
   return <Provider store={store}>{children}</Provider>;
 }

@@ -14,7 +14,6 @@ import {
 } from "./ui/dropdown-menu";
 import {
   FileTextIcon,
-  GraduationCap,
   LucideLayoutDashboard,
   LucideLogOut,
   PenBox,
