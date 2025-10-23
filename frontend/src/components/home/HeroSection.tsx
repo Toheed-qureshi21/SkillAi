@@ -28,7 +28,7 @@ const HeroSection = () => {
                 Get Started
               </Button>
             </Link>
-          </div>{" "}
+          </div>
         </div>
       </div>
     </section>

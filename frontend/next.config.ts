@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
     images: {
     domains: ["randomuser.me"], // allow this external host
   },
-  reactStrictMode:false,
+  // reactStrictMode:false,
   async rewrites() {
     return [
       {

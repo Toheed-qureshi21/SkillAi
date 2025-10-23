@@ -1,6 +1,5 @@
 import crypto from "crypto";
 import { UserModel } from "../models/User.schema.js";
-import { Response } from "express";
 import { redis } from "../lib/redisClient.js";
 
 export const generateVerificationToken = (digit = 6) => {
@@ -31,7 +30,7 @@ export const fetchUserProfile = async (id: string): Promise<any | null> => {
     }
     const plainUser = user.toObject()
     await redis.hset(`user:${user._id}`, { user: JSON.stringify(plainUser) });
-    await redis.expire(`user:${user._id}`, 7 * 24 * 60 * 60 * 1000);
+    await redis.expire(`user:${user._id}`, 24 * 60 * 60 * 1000);
     return user;
   } catch (error) {
     console.error(`Error fetching user profile for ID ${id}:`, error);

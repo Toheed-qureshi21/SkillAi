@@ -13,6 +13,7 @@ export const TryCatch = (
           statusCode?: number;
           publicMessage?: string;
         };
+        console.log("Server error is ",error)
         if (status ?? statusCode) {
           return res
             .status(status ?? statusCode!)

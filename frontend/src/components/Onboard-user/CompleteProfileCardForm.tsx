@@ -39,7 +39,7 @@ const CompleteProfileCardForm = () => {
   >(null);
   const [details, setDetails] = useState<payloadForOnboarding>({
     specialization: "",
-    yearOfExperience: "",
+    yearsOfExperience: 0,
     skills: "",
     bio: "",
   });
@@ -78,7 +78,7 @@ const CompleteProfileCardForm = () => {
       const payload :payloadForOnboarding = {
         industry: selectedIndustry?.name || "",
         specialization: details.specialization,
-        yearOfExperience: Number(details.yearOfExperience), // ✅ convert to number
+        yearsOfExperience: Number(details.yearsOfExperience), // ✅ convert to number
         skills: (typeof details.skills === "string"
           ? details.skills.split(",").map((s) => s.trim().toLowerCase())
           : details.skills), // ✅ convert to array
@@ -86,6 +86,7 @@ const CompleteProfileCardForm = () => {
       };
       const response = await onboardUser(payload );
       dispatch(setUser(response.data.user));
+      return toast.success(response.data.message)
     } catch (error: AxiosError | unknown) {
       const message =
         error instanceof AxiosError
@@ -172,8 +173,8 @@ const CompleteProfileCardForm = () => {
             <Input
               id="yoe"
               type="number"
-              name="yearOfExperience"
-              value={details.yearOfExperience}
+              name="yearsOfExperience"
+              value={details.yearsOfExperience}
               onChange={handleInputChange}
               placeholder="Enter your years of experience"
               className="w-full"
@@ -217,7 +218,7 @@ const CompleteProfileCardForm = () => {
             type="submit"
             disabled={
               !selectedIndustry ||
-              !details.yearOfExperience ||
+              !details.yearsOfExperience ||
               !details.specialization ||
               !details.bio ||
               !details.skills

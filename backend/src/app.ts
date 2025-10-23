@@ -8,6 +8,7 @@ import rateLimit from "express-rate-limit";
 import { connectDb } from "./lib/db.js";
 import authRouter from "./routes/auth/auth.route.js";
 import userRoutes from "./routes/user/user.route.js";
+import industryInsightsRoutes from "./routes/industryInsights/industryInsights.route.js"
 
 import passport from "passport";
 
@@ -50,6 +51,8 @@ app.use(limiter);
 app.use("/api/auth", authRouter); // full path: /api/auth/signup, /api/auth/login
 
 app.use("/api/user", userRoutes); // full path :/api/user/me
+
+app.use("/api/industry-insights",industryInsightsRoutes); //full paht :/api/industry-insights/*
 
 const PORT = process.env.PORT || 5000;
 
