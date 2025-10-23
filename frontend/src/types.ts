@@ -6,7 +6,7 @@ export interface FormState {
 export interface payloadForOnboarding {
   industry?: string;
   specialization: string;
-  yearOfExperience: string | number;
+  yearsOfExperience: string | number;
   skills: string | string[];
   bio: string;
 }

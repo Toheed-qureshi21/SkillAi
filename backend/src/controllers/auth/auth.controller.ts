@@ -1,17 +1,19 @@
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
+import { z } from "zod";
+
 import { TryCatch } from "../../utils/TryCatch.js";
 import {
   loginValidator,
   SignupInput,
   signupValidator,
 } from "../../validators/auth.validator.js";
-import { IUser, UserModel } from "../../models/User.schema.js";
+import { UserModel } from "../../models/User.schema.js";
+import { IUser } from "../../types/types.js";
 import { generateAccessToken, generateRefreshToken } from "../../utils/jwt.js";
 import { sendJwtTokensInCookies } from "../../utils/cookies.js";
 import { sendVerificationEmail } from "../../utils/sendEmail.js";
 import { generateVerificationToken } from "../../services/user.service.js";
-import { z } from "zod";
 import {
   accessCookieOptions,
   refreshCookieOptions,

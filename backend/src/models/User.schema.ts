@@ -1,26 +1,7 @@
-import mongoose, { Document, Schema } from "mongoose";
+import mongoose from "mongoose";
+import { IUser } from "../types/types.js";
 
-export interface IUser extends Document {
-  name: string;
-  email: string;
-  password: string ;
-  isEmailVerified: boolean;
-  emailVerificationToken?: string | null;
-  emailVerificationTokenExpires?: Date | null;
-  isCredentialsLogin?: boolean;
-  isOnboarded?: boolean;
-  industry?: string;
-  bio?: string;
-  specialization?: string;
-  yearsOfExperience?: number;
-  skills?: string[];
 
-  // Relations
-  industryInsight?: mongoose.Types.ObjectId;
-  assessments?: mongoose.Types.ObjectId[];
-  resume?: mongoose.Types.ObjectId;
-  coverLetters?: mongoose.Types.ObjectId[];
-}
 
 const userSchema = new mongoose.Schema<IUser>(
   {
@@ -88,7 +69,7 @@ const userSchema = new mongoose.Schema<IUser>(
     },
 
     // Relations
-    industryInsight: {
+    industryInsights: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "IndustryInsight",
     },
