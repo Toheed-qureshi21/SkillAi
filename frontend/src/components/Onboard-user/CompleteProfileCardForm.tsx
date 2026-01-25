@@ -30,10 +30,13 @@ import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { payloadForOnboarding } from "@/types";
 
+
+
 const CompleteProfileCardForm = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState<boolean>(false);
+  const [errors,setErrors] = useState({});
   const [selectedIndustry, setSelectedIndustry] = useState<
     null | (typeof industries)[0]
   >(null);
@@ -47,6 +50,7 @@ const CompleteProfileCardForm = () => {
   const { user } = useAppSelector((state) => state.user);
 
   useEffect(() => {
+    if (!user) return;
     if (user && user.isOnboarded) {
       router.replace("/dashboard"); // ✅ mirror opposite condition
     }
@@ -70,6 +74,10 @@ const CompleteProfileCardForm = () => {
       [name]: value,
     }));
   };
+  interface BackendZodError {
+    path: string[];
+    message: string;
+  }
 
   const handleFormSumbitForOnboarding = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -87,13 +95,37 @@ const CompleteProfileCardForm = () => {
       const response = await onboardUser(payload );
       dispatch(setUser(response.data.user));
       return toast.success(response.data.message)
-    } catch (error: AxiosError | unknown) {
-      const message =
-        error instanceof AxiosError
-          ? error.response?.data?.message ?? error.message
-          : "Failed to onboard user";
-      toast.error(message);
-    } finally {
+    }catch (error: AxiosError | unknown) {
+      // Check if it's an Axios error
+      if (error instanceof AxiosError) {
+        const backendData = error.response?.data;
+
+        // 2. Check if the backend sent specific validation errors (the array you showed)
+        if (backendData && Array.isArray(backendData.errors)) {
+          const fieldErrors: Partial<Record<keyof payloadForOnboarding, string>> = {};
+
+          // Loop through the backend Zod errors
+          (backendData.errors as BackendZodError[]).forEach((issue) => {
+            // path[0] is the field name (e.g., "bio", "skills")
+            const fieldName = issue.path[0] as keyof payloadForOnboarding;
+            fieldErrors[fieldName] = issue.message;
+          });
+
+          // Update the state to show red text under inputs
+          setErrors(fieldErrors);
+          
+          // Optional: Show a generic toast so they know something failed
+          toast.error("Please fix the errors in the form");
+        } else {
+          // Fallback for generic errors (like 500 Server Error)
+          const message = backendData?.message || error.message || "Something went wrong";
+          toast.error(message);
+        }
+      } else {
+        // Non-Axios error
+        toast.error("An unexpected error occurred");
+      }
+    }finally {
       setLoading(false);
     }    
     }

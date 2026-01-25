@@ -4,6 +4,7 @@ import { onboardUserValidator } from "../../validators/user.validator.js";
 import { UserModel } from "../../models/User.schema.js";
 import { IUser } from "../../types/types.js";
 import { redis } from "../../lib/redisClient.js";
+import { userCacheService } from "../../services/cache.service.js";
 
 
 
@@ -31,42 +32,21 @@ export const onboardUserToCompleteProfile = TryCatch(
     }
     const user = req.user as IUser;
 
-    // Update user in MongoDB
+    // Update DB
     const updatedUser = await UserModel.findByIdAndUpdate(
-      user._id,
-      {
-        industry,
-        specialization,
-        yearsOfExperience,
-        isOnboarded: true,
-        skills,
-        bio,
-      },
-      { new: true }
+       user._id,
+       { ...req.body, isOnboarded: true },
+       { new: true }
     );
 
-    if (!updatedUser) {
-      return res.status(404).json({ success: false, message: "User not found" });
-    }
+    if (!updatedUser) return res.status(404).json({success:false,message:"User not found"});
 
-    // Cache the updated user in Redis
-    const cacheKey = `user-${user._id}`;
-    await redis.hset(cacheKey, {
-      ...updatedUser.toObject(),
-      industry: updatedUser.industry || "",
-      specialization: updatedUser.specialization || "",
-      yearsOfExperience: updatedUser.yearsOfExperience?.toString() || "0",
-      skills: JSON.stringify(updatedUser.skills || []),
-      bio: updatedUser.bio || "",
-      isOnboarded: updatedUser.isOnboarded,
-    });
-
-    // Optional: set TTL, e.g., 24 hours
-    // await redis.expire(cacheKey, 60 * 60 * 24);
+    // We don't manually set data here. We wipe the dirty data.
+    // The next time 'getUser' is called, it will auto-fetch fresh data.
+    await userCacheService.invalidateUser(updatedUser._id.toString());
 
     return res.status(200).json({
       success: true,
-      message: "Profile completed successfully",
       user: updatedUser,
     });
   }

@@ -115,7 +115,7 @@ export const googleCallback = TryCatch(async (req: Request, res: Response) => {
   await redis.hset(`user:${user._id}`, { user: JSON.stringify(user) });
 
   sendJwtTokensInCookies(res, userObj.accessToken, userObj.refreshToken);
-  const redirectUrl = `${process.env.FRONTEND_URL}/auth-success?googleLogin=true`;
+  const redirectUrl = `${process.env.FRONTEND_URL}/auth-success?googleLogin=true&&x-id=${user._id}`;
   return res.redirect(redirectUrl);
 });
 

@@ -1,24 +1,21 @@
-"use client"
+import DashboardClient from "@/components/dashboard/DashboardClient";
 
-import { getIndustryInsights } from "@/backend-apis/industryInsights";
-import { useAppSelector } from "@/redux/hooks"
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-
+export const metadata = {
+  title: "Dashboard | SkillAI",
+  description:
+    "Access your personalized dashboard with insights, analytics, and essential industry information.",
+  keywords: ["dashboard", "analytics", "insights", "industry insights"],
+  openGraph: {
+    title: "Dashboard | SkillAI",
+    description:
+      "View your personalized dashboard with insights and recommendations.",
+    url: `${process.env.NEXT_FRONTEND_URL}`,
+    siteName: "SkillAI",
+    type: "website",
+  },
+};
 export default function DashboardPage() {
-    const {user} = useAppSelector((state)=>state.user);
-    const router = useRouter();
-   useEffect(() => {
-    if (user && user.isOnboarded === false) {
-      router.replace("/onboard-user");
-    }
-    (async()=>{
-      const response = await getIndustryInsights();
-      console.log(response);
-      
-    })();
-  }, []);
     return(
-        <div className="text-3xl text-center ">Welcome to your Dashboard {user?.name}!</div>
+        <DashboardClient/>
     )
 }

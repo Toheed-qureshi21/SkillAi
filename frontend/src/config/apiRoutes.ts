@@ -7,7 +7,7 @@ export const API_ROUTES = {
   },
   user:{
     me:"/user/me",
-    onboard:"user/onboard",
+    onboard:"/user/onboard",
   },
   industryInsights:{
     getIndustryInsights:"/industry-insights"

@@ -6,17 +6,18 @@ import type { Request, Response } from "express";
 import { redis } from "../../lib/redisClient.js";
 
 export const getIndustryInsights = TryCatch(async (req: Request, res: Response) => {
+    // 1️⃣ Ensure user is authenticated
     if (!req.user) {
         return res.status(401).json({ message: "Unauthorized" });
     }
 
     const user = req.user as IUser;
-    const userId = user._id;
+    const userId = user?._id?.toString();
     const cacheKey = `user:${userId}`;
 
-    // Try to get user from Redis first
-    const cached = await redis.hget(cacheKey, "user");
+    // 2️⃣ Try to get user from Redis first
     let cachedUser: IUser | null = null;
+    const cached = await redis.hget(cacheKey, "user");
 
     if (cached) {
         try {
@@ -29,36 +30,34 @@ export const getIndustryInsights = TryCatch(async (req: Request, res: Response) 
     // Use cached user if available, otherwise req.user
     const userToUse = cachedUser || user;
 
-    // If industryInsights already exists, return it
+    // 3️⃣ Return cached industryInsights if present
     if (userToUse.industryInsights) {
         return res.status(200).json({ success: true, insights: userToUse.industryInsights });
     }
 
-    // Ensure industry is available
+    // 4️⃣ Ensure user has an industry
     if (!userToUse.industry) {
         return res.status(400).json({ message: "Industry is required to generate insights" });
     }
 
-    // Check if IndustryInsight already exists in DB
-    let industryInsight = await IndustryInsight.findOne({ industry: userToUse.industry });
+    // 5️⃣ Safely fetch or create IndustryInsight with upsert
+    const industryInsight = await IndustryInsight.findOneAndUpdate(
+        { industry: userToUse.industry }, // query
+        {
+            $setOnInsert: {
+                ...(await generateAIIndustryInsights(userToUse.industry)),
+                nextUpdate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 1 week later
+            },
+        },
+        { new: true, upsert: true } // return existing or newly created doc
+    );
 
-    if (!industryInsight) {
-        // Generate new insights using AI service
-        const insights = await generateAIIndustryInsights(userToUse.industry);
-
-        // Create IndustryInsight in DB
-        industryInsight = await IndustryInsight.create({
-            industry: userToUse.industry,
-            ...insights,
-            nextUpdate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 1 week later
-        });
-    }
-
-    // Assign to user object
+    // 6️⃣ Assign to user object
     userToUse.industryInsights = industryInsight;
 
-    // Update Redis cache
+    // 7️⃣ Update Redis cache
     await redis.hset(cacheKey, "user", JSON.stringify(userToUse));
 
+    // 8️⃣ Return the industryInsight
     return res.status(200).json({ success: true, industryInsight });
 });

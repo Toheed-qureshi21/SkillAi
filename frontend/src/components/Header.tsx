@@ -30,7 +30,7 @@ const Header = async () => {
       <nav className=" flex items-center justify-between ">
         <Link href="/">
           <Image
-            src="/SkilllAI.png"
+            src="/SkilllAI.webp"
             alt="SkillAI logo"
             width={200}
             height={60}
