@@ -1,18 +1,6 @@
+import { User } from '@/types/dashboard.types';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-export type User = {
-  _id: string;
-  name: string;
-  email: string;
-  isEmailVerified: boolean;
-  isOnboarded: boolean;
-  industry: string;
-  bio: string;
-  specialization: string;
-  yearsOfExperience: number;
-  skills: string[];
-
-};
 
 interface UserState {
   user: User | null;

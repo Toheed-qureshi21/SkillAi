@@ -44,6 +44,8 @@ const AuthForm = ({ isLogin }: { isLogin: boolean }) => {
           email: form.email,
           password: form.password,
         });
+        localStorage.setItem("x-id", response.data.user._id);
+        localStorage.setItem("isLoggedIn", "true");
         toast.success(response.data.message || "Signup Successful");
         router.push("/verify-email");
       }

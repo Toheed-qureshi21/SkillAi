@@ -1,5 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
-import userReducer, { User } from "./userSlice";
+import userReducer from "./userSlice";
+import { User } from "@/types/dashboard.types";
 
 interface PreloadedState {
   user?: User | null; // initialUser

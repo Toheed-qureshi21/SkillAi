@@ -1,5 +1,4 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
-// import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenAI } from "@google/genai";
 import { config } from "dotenv";
 
 config();
@@ -8,9 +7,21 @@ const geminiApiKey = process.env.GEMINI_API_KEY;
 if (!geminiApiKey) {
   throw new Error("Environment variable GEMINI_API_KEY is required");
 }
-const genAi = new GoogleGenerativeAI(geminiApiKey);
 
-export const genAiModel = genAi.getGenerativeModel({
-    model:"gemini-2.5-pro"
-})
+const genAI = new GoogleGenAI({
+  apiKey: geminiApiKey,
+});
 
+export const genAiModel = {
+  async generateContent(prompt: string) {
+    return genAI.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: [
+        {
+          role: "user",
+          parts: [{ text: prompt }],
+        },
+      ],
+    });
+  },
+};

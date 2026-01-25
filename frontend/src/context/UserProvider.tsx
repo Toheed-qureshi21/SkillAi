@@ -41,6 +41,11 @@ export default function UserProvider({
       //   }
 
       try {
+        const id = localStorage.getItem("x-id");
+        const isLoggedIn = localStorage.getItem("isLoggedIn");
+        if (!id || !isLoggedIn) {
+          return;
+        }
         const res = await getCurrentUser();
         if (res?.data?.user) {
           setLocalUser(res.data.user);
